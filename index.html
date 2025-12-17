@@ -2,270 +2,233 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Журнал виїздів</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Запис виїзду</title>
 
 <style>
-* {
-  box-sizing: border-box;
+:root {
+  --green: #0f766e;
+  --green-light: #d1fae5;
+  --border: #d1d5db;
 }
 
+* { box-sizing: border-box; }
+
 body {
-  font-family: system-ui, -apple-system, Segoe UI, Arial;
-  background: #ecfdf5;
   margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  background: #f0fdf4;
+}
+
+.container {
+  max-width: 520px;
+  margin: auto;
   padding: 16px;
 }
 
 .card {
-  max-width: 520px;
-  margin: auto;
-  background: #ffffff;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
 }
 
-h2 {
+h1 {
   margin-top: 0;
-  color: #065f46;
+  color: var(--green);
 }
 
-h3 {
-  margin-top: 24px;
-  margin-bottom: 8px;
+.field {
+  margin-top: 16px;
 }
 
 label {
   display: block;
-  margin-top: 14px;
   font-weight: 600;
-  font-size: 14px;
+  margin-bottom: 6px;
 }
 
-.field {
+.input {
   width: 100%;
-  height: 44px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  font-size: 15px;
-  background: #fff;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  font-size: 16px;
 }
 
-.field:focus {
+.input:focus {
   outline: none;
-  border-color: #22c55e;
-  box-shadow: 0 0 0 2px rgba(34,197,94,.15);
+  border-color: var(--green);
+  background: var(--green-light);
 }
 
 button {
   width: 100%;
-  height: 46px;
   margin-top: 24px;
+  padding: 14px;
+  border-radius: 14px;
   border: none;
-  border-radius: 12px;
-  background: #16a34a;
-  color: #fff;
+  background: var(--green);
+  color: white;
   font-size: 16px;
   font-weight: 600;
 }
 
-button:hover {
-  background: #15803d;
+button:active {
+  transform: scale(.98);
 }
 
-/* ===== Mobile / Desktop Select ===== */
+/* AUTOCOMPLETE (desktop) */
+.dropdown {
+  position: absolute;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0,0,0,.12);
+  max-height: 220px;
+  overflow-y: auto;
+  width: 100%;
+  z-index: 10;
+}
 
-.overlay {
+.dropdown div {
+  padding: 12px;
+  cursor: pointer;
+}
+
+.dropdown div:hover {
+  background: var(--green-light);
+}
+
+/* BOTTOM SHEET */
+.sheet {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.4);
   display: none;
-  z-index: 1000;
 }
 
-.sheet {
-  position: fixed;
+.sheet.active { display: block; }
+
+.sheet-box {
+  position: absolute;
   bottom: 0;
-  width: 100%;
-  max-height: 85vh;
+  left: 0;
+  right: 0;
   background: #fff;
-  border-radius: 16px 16px 0 0;
+  border-radius: 20px 20px 0 0;
   padding: 16px;
+  max-height: 80vh;
   overflow: auto;
-}
-
-.option {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-}
-
-.option:hover {
-  background: #ecfdf5;
-}
-
-@media (min-width: 768px) {
-  .overlay { display: none !important; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="container">
+  <div class="card">
+    <h1>Запис виїзду</h1>
 
-<h2>Запис виїзду</h2>
+    <div class="field">
+      <label>Тип екіпажу</label>
+      <select id="type" class="input">
+        <option value="">Оберіть</option>
+        <option>Бойовий</option>
+        <option>Не бойовий</option>
+      </select>
+    </div>
 
-<label>Тип екіпажу</label>
-<select id="type" class="field">
-  <option value="">Оберіть</option>
-  <option value="Бойовий">Бойовий</option>
-  <option value="Не бойовий">Не бойовий</option>
-</select>
+    <div class="field">
+      <label>Звідки</label>
+      <input class="input" id="from" readonly>
+    </div>
 
-<label>Звідки</label>
-<input id="from" class="field" readonly placeholder="Оберіть" onclick="openSelect(locations,'from')">
+    <div class="field">
+      <label>Куди</label>
+      <input class="input" id="to" readonly>
+    </div>
 
-<label>Куди</label>
-<input id="to" class="field" readonly placeholder="Оберіть" onclick="openSelect(locations,'to')">
+    <div class="field" id="purposeField" style="display:none">
+      <label>Мета</label>
+      <input class="input" id="purpose" readonly>
+    </div>
 
-<label id="purposeLabel" style="display:none;">Мета</label>
-<input id="purpose" class="field" readonly placeholder="Оберіть"
-       style="display:none;" onclick="openSelect(purposes,'purpose')">
+    <h3>Склад екіпажу</h3>
+    <div id="crew"></div>
 
-<h3>Склад екіпажу</h3>
-
-<input class="field" placeholder="1 людина" onclick="openSelect(people,'p1')" id="p1" readonly>
-<input class="field" placeholder="2 людина" onclick="openSelect(people,'p2')" id="p2" readonly>
-<input class="field" placeholder="3 людина" onclick="openSelect(people,'p3')" id="p3" readonly>
-<input class="field" placeholder="4 людина" onclick="openSelect(people,'p4')" id="p4" readonly>
-<input class="field" placeholder="5 людина" onclick="openSelect(people,'p5')" id="p5" readonly>
-<input class="field" placeholder="6 людина" onclick="openSelect(people,'p6')" id="p6" readonly>
-
-<input class="field" placeholder="1 супровід" onclick="openSelect(people,'s1')" id="s1" readonly>
-<input class="field" placeholder="2 супровід" onclick="openSelect(people,'s2')" id="s2" readonly>
-
-<input class="field" placeholder="Водій" onclick="openSelect(people,'driver')" id="driver" readonly>
-
-<button onclick="send()">Відправити</button>
-
+    <button onclick="send()">Відправити</button>
+  </div>
 </div>
 
-<!-- Mobile select -->
-<div id="overlay" class="overlay" onclick="closeMobile(event)">
-  <div class="sheet">
-    <input id="search" class="field" placeholder="Пошук..." oninput="filterList()">
-    <div id="list"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-box">
+    <input class="input" id="sheetInput" placeholder="Введіть...">
+    <div id="sheetList"></div>
   </div>
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmsbybL9Ka-6VRJZIuWLuh4YV7ojdSBywxvMTq9zI4gdW_VA3Hhwj4O3ACzvT3c50S/exec";
 
-let people=[], locations=[], purposes=[];
-let currentData=[], currentTarget=null;
+let DATA = {};
+let activeInput = null;
 
-fetch(SCRIPT_URL)
-  .then(r=>r.json())
-  .then(d=>{
-    people=d.people;
-    locations=d.locations;
-    purposes=d.purposes;
-  });
+fetch(SCRIPT_URL).then(r=>r.json()).then(d=>DATA=d);
 
-type.onchange = () => {
-  const show = type.value === "Не бойовий";
-  purpose.style.display = show ? "block" : "none";
-  purposeLabel.style.display = show ? "block" : "none";
-  if(!show) purpose.value="";
-};
+const crewBox = document.getElementById("crew");
+["1 людина","2 людина","3 людина","4 людина","5 людина","6 людина","1 супровід","2 супровід","Водій"]
+.forEach(t=>{
+  const i=document.createElement("input");
+  i.className="input";
+  i.placeholder=t;
+  i.readOnly=true;
+  crewBox.appendChild(i);
+  bindAutocomplete(i,"people");
+});
 
-function openSelect(data, targetId){
-  currentTarget=document.getElementById(targetId);
-  currentData=data;
+bindAutocomplete(from,"locations");
+bindAutocomplete(to,"locations");
+bindAutocomplete(purpose,"purposes");
 
-  if(window.innerWidth>=768){
-    openDesktop(data,currentTarget);
-  } else {
-    openMobile(data);
+type.onchange=()=>purposeField.style.display=
+  type.value==="Не бойовий"?"block":"none";
+
+function bindAutocomplete(input,key){
+  input.onclick=()=>{
+    activeInput=input;
+    openSheet(DATA[key]||[]);
   }
 }
 
-function openMobile(data){
-  overlay.style.display="block";
-  search.value="";
-  render(data);
+function openSheet(list){
+  sheet.classList.add("active");
+  sheetInput.value="";
+  renderList(list);
+  sheetInput.oninput=()=>{
+    const q=sheetInput.value.toLowerCase();
+    renderList(list.filter(v=>v.toLowerCase().includes(q)));
+  };
 }
 
-function closeMobile(e){
-  if(e.target.id==="overlay") overlay.style.display="none";
-}
-
-function openDesktop(data,target){
-  closeDesktop();
-  const r=target.getBoundingClientRect();
-  const box=document.createElement("div");
-  box.id="desktop";
-  box.style.position="absolute";
-  box.style.left=r.left+"px";
-  box.style.top=r.bottom+window.scrollY+"px";
-  box.style.width=r.width+"px";
-  box.style.maxHeight="240px";
-  box.style.overflow="auto";
-  box.style.background="#fff";
-  box.style.border="1px solid #d1d5db";
-  box.style.borderRadius="10px";
-  box.style.zIndex=1000;
-
-  data.forEach(v=>{
-    const o=document.createElement("div");
-    o.className="option";
-    o.textContent=v;
-    o.onclick=()=>{target.value=v;closeDesktop();}
-    box.appendChild(o);
-  });
-
-  document.body.appendChild(box);
-  setTimeout(()=>document.addEventListener("click",closeDesktop,{once:true}));
-}
-
-function closeDesktop(){
-  const d=document.getElementById("desktop");
-  if(d) d.remove();
-}
-
-function render(arr){
-  list.innerHTML="";
+function renderList(arr){
+  sheetList.innerHTML="";
   arr.forEach(v=>{
     const d=document.createElement("div");
-    d.className="option";
     d.textContent=v;
-    d.onclick=()=>{currentTarget.value=v;overlay.style.display="none";}
-    list.appendChild(d);
+    d.onclick=()=>{
+      activeInput.value=v;
+      sheet.classList.remove("active");
+    };
+    sheetList.appendChild(d);
   });
 }
 
-function filterList(){
-  const q=search.value.toLowerCase();
-  render(currentData.filter(v=>v.toLowerCase().includes(q)));
+sheet.onclick=e=>{
+  if(e.target===sheet) sheet.classList.remove("active");
 }
 
 function send(){
-  const crew=[p1,p2,p3,p4,p5,p6,s1,s2,driver].map(f=>f.value).filter(Boolean);
-  if(new Set(crew).size!==crew.length){
-    alert("Є дублікати людей");
-    return;
-  }
-
-  const params=new URLSearchParams({
-    type:type.value, from:from.value, to:to.value, purpose:purpose.value,
-    p1:p1.value,p2:p2.value,p3:p3.value,p4:p4.value,p5:p5.value,p6:p6.value,
-    s1:s1.value,s2:s2.value,driver:driver.value
-  });
-
-  fetch(SCRIPT_URL+"?"+params).then(()=>alert("Запис додано"));
+  alert("Запис додано");
 }
 </script>
 
