@@ -2,24 +2,28 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Журнал виїздів</title>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background: #f0fdf4;
+  font-family: system-ui, -apple-system, Segoe UI, Arial;
+  background: #ecfdf5;
   margin: 0;
   padding: 16px;
 }
 
 .card {
-  max-width: 600px;
+  max-width: 520px;
   margin: auto;
-  background: white;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
 }
 
 h2 {
@@ -27,69 +31,83 @@ h2 {
   color: #065f46;
 }
 
+h3 {
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
 label {
   display: block;
-  margin-top: 16px;
+  margin-top: 14px;
   font-weight: 600;
+  font-size: 14px;
 }
 
-input, select, button {
+.field {
   width: 100%;
-  padding: 12px;
-  margin-top: 6px;
+  height: 44px;
+  padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+  border: 1px solid #d1d5db;
+  font-size: 15px;
+  background: #fff;
 }
 
-input[readonly] {
-  background: #f9fafb;
-  cursor: pointer;
+.field:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34,197,94,.15);
 }
 
 button {
+  width: 100%;
+  height: 46px;
   margin-top: 24px;
-  background: #16a34a;
-  color: white;
-  font-size: 18px;
   border: none;
+  border-radius: 12px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 button:hover {
   background: #15803d;
 }
 
-/* ===== Overlay (як Google Forms) ===== */
+/* ===== Mobile / Desktop Select ===== */
+
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,.4);
   display: none;
-  z-index: 999;
+  z-index: 1000;
 }
 
 .sheet {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
-  max-height: 85%;
-  background: white;
-  border-radius: 18px 18px 0 0;
+  max-height: 85vh;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
   padding: 16px;
   overflow: auto;
 }
 
-.sheet input {
-  border-radius: 12px;
-}
-
 .option {
-  padding: 14px;
+  padding: 12px;
   border-bottom: 1px solid #eee;
+  cursor: pointer;
 }
 
 .option:hover {
   background: #ecfdf5;
+}
+
+@media (min-width: 768px) {
+  .overlay { display: none !important; }
 }
 </style>
 </head>
@@ -97,46 +115,48 @@ button:hover {
 <body>
 
 <div class="card">
+
 <h2>Запис виїзду</h2>
 
 <label>Тип екіпажу</label>
-<select id="type">
-  <option value="">— обери —</option>
+<select id="type" class="field">
+  <option value="">Оберіть</option>
   <option value="Бойовий">Бойовий</option>
   <option value="Не бойовий">Не бойовий</option>
 </select>
 
 <label>Звідки</label>
-<input id="from" readonly placeholder="Обери" onclick="openSelect(locations,'from')">
+<input id="from" class="field" readonly placeholder="Оберіть" onclick="openSelect(locations,'from')">
 
 <label>Куди</label>
-<input id="to" readonly placeholder="Обери" onclick="openSelect(locations,'to')">
+<input id="to" class="field" readonly placeholder="Оберіть" onclick="openSelect(locations,'to')">
 
 <label id="purposeLabel" style="display:none;">Мета</label>
-<input id="purpose" readonly placeholder="Обери" style="display:none;"
-       onclick="openSelect(purposes,'purpose')">
+<input id="purpose" class="field" readonly placeholder="Оберіть"
+       style="display:none;" onclick="openSelect(purposes,'purpose')">
 
 <h3>Склад екіпажу</h3>
 
-<input id="p1" readonly placeholder="1 людина" onclick="openSelect(people,'p1')">
-<input id="p2" readonly placeholder="2 людина" onclick="openSelect(people,'p2')">
-<input id="p3" readonly placeholder="3 людина" onclick="openSelect(people,'p3')">
-<input id="p4" readonly placeholder="4 людина" onclick="openSelect(people,'p4')">
-<input id="p5" readonly placeholder="5 людина" onclick="openSelect(people,'p5')">
-<input id="p6" readonly placeholder="6 людина" onclick="openSelect(people,'p6')">
+<input class="field" placeholder="1 людина" onclick="openSelect(people,'p1')" id="p1" readonly>
+<input class="field" placeholder="2 людина" onclick="openSelect(people,'p2')" id="p2" readonly>
+<input class="field" placeholder="3 людина" onclick="openSelect(people,'p3')" id="p3" readonly>
+<input class="field" placeholder="4 людина" onclick="openSelect(people,'p4')" id="p4" readonly>
+<input class="field" placeholder="5 людина" onclick="openSelect(people,'p5')" id="p5" readonly>
+<input class="field" placeholder="6 людина" onclick="openSelect(people,'p6')" id="p6" readonly>
 
-<input id="s1" readonly placeholder="1 супровід" onclick="openSelect(people,'s1')">
-<input id="s2" readonly placeholder="2 супровід" onclick="openSelect(people,'s2')">
+<input class="field" placeholder="1 супровід" onclick="openSelect(people,'s1')" id="s1" readonly>
+<input class="field" placeholder="2 супровід" onclick="openSelect(people,'s2')" id="s2" readonly>
 
-<input id="driver" readonly placeholder="Водій" onclick="openSelect(people,'driver')">
+<input class="field" placeholder="Водій" onclick="openSelect(people,'driver')" id="driver" readonly>
 
 <button onclick="send()">Відправити</button>
+
 </div>
 
-<!-- ===== Overlay ===== -->
-<div id="overlay" class="overlay" onclick="closeSelect(event)">
+<!-- Mobile select -->
+<div id="overlay" class="overlay" onclick="closeMobile(event)">
   <div class="sheet">
-    <input id="search" placeholder="Пошук..." oninput="filterList()">
+    <input id="search" class="field" placeholder="Пошук..." oninput="filterList()">
     <div id="list"></div>
   </div>
 </div>
@@ -144,91 +164,108 @@ button:hover {
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmsbybL9Ka-6VRJZIuWLuh4YV7ojdSBywxvMTq9zI4gdW_VA3Hhwj4O3ACzvT3c50S/exec";
 
-/* ===== Дані з бази ===== */
-let people = [];
-let locations = [];
-let purposes = [];
+let people=[], locations=[], purposes=[];
+let currentData=[], currentTarget=null;
 
-/* ===== Select engine ===== */
-let currentTarget = null;
-let currentData = [];
-
-function openSelect(data, targetId) {
-  currentTarget = document.getElementById(targetId);
-  currentData = data;
-  document.getElementById("overlay").style.display = "block";
-  document.getElementById("search").value = "";
-  renderList(data);
-}
-
-function closeSelect(e) {
-  if (e.target.id === "overlay") {
-    document.getElementById("overlay").style.display = "none";
-  }
-}
-
-function renderList(data) {
-  const list = document.getElementById("list");
-  list.innerHTML = "";
-  data.forEach(v => {
-    const div = document.createElement("div");
-    div.className = "option";
-    div.textContent = v;
-    div.onclick = () => {
-      currentTarget.value = v;
-      document.getElementById("overlay").style.display = "none";
-    };
-    list.appendChild(div);
-  });
-}
-
-function filterList() {
-  const q = document.getElementById("search").value.toLowerCase();
-  renderList(currentData.filter(v => v.toLowerCase().includes(q)));
-}
-
-/* ===== Завантаження довідників ===== */
 fetch(SCRIPT_URL)
-  .then(r => r.json())
-  .then(data => {
-    people = data.people || [];
-    locations = data.locations || [];
-    purposes = data.purposes || [];
+  .then(r=>r.json())
+  .then(d=>{
+    people=d.people;
+    locations=d.locations;
+    purposes=d.purposes;
   });
 
-/* ===== Логіка ===== */
 type.onchange = () => {
   const show = type.value === "Не бойовий";
   purpose.style.display = show ? "block" : "none";
   purposeLabel.style.display = show ? "block" : "none";
-  if (!show) purpose.value = "";
+  if(!show) purpose.value="";
 };
 
-function send() {
-  if (!type.value || !from.value || !to.value) {
-    alert("Заповни обовʼязкові поля");
+function openSelect(data, targetId){
+  currentTarget=document.getElementById(targetId);
+  currentData=data;
+
+  if(window.innerWidth>=768){
+    openDesktop(data,currentTarget);
+  } else {
+    openMobile(data);
+  }
+}
+
+function openMobile(data){
+  overlay.style.display="block";
+  search.value="";
+  render(data);
+}
+
+function closeMobile(e){
+  if(e.target.id==="overlay") overlay.style.display="none";
+}
+
+function openDesktop(data,target){
+  closeDesktop();
+  const r=target.getBoundingClientRect();
+  const box=document.createElement("div");
+  box.id="desktop";
+  box.style.position="absolute";
+  box.style.left=r.left+"px";
+  box.style.top=r.bottom+window.scrollY+"px";
+  box.style.width=r.width+"px";
+  box.style.maxHeight="240px";
+  box.style.overflow="auto";
+  box.style.background="#fff";
+  box.style.border="1px solid #d1d5db";
+  box.style.borderRadius="10px";
+  box.style.zIndex=1000;
+
+  data.forEach(v=>{
+    const o=document.createElement("div");
+    o.className="option";
+    o.textContent=v;
+    o.onclick=()=>{target.value=v;closeDesktop();}
+    box.appendChild(o);
+  });
+
+  document.body.appendChild(box);
+  setTimeout(()=>document.addEventListener("click",closeDesktop,{once:true}));
+}
+
+function closeDesktop(){
+  const d=document.getElementById("desktop");
+  if(d) d.remove();
+}
+
+function render(arr){
+  list.innerHTML="";
+  arr.forEach(v=>{
+    const d=document.createElement("div");
+    d.className="option";
+    d.textContent=v;
+    d.onclick=()=>{currentTarget.value=v;overlay.style.display="none";}
+    list.appendChild(d);
+  });
+}
+
+function filterList(){
+  const q=search.value.toLowerCase();
+  render(currentData.filter(v=>v.toLowerCase().includes(q)));
+}
+
+function send(){
+  const crew=[p1,p2,p3,p4,p5,p6,s1,s2,driver].map(f=>f.value).filter(Boolean);
+  if(new Set(crew).size!==crew.length){
+    alert("Є дублікати людей");
     return;
   }
 
-  const crew = [
-    p1.value,p2.value,p3.value,p4.value,p5.value,p6.value,
-    s1.value,s2.value,driver.value
-  ].filter(Boolean);
-
-  const dup = crew.filter((v,i,a)=>a.indexOf(v)!==i);
-  if (dup.length) {
-    alert("Дублікати: " + dup.join(", "));
-    return;
-  }
-
-  const params = new URLSearchParams({
-    type:type.value,from:from.value,to:to.value,purpose:purpose.value,
+  const params=new URLSearchParams({
+    type:type.value, from:from.value, to:to.value, purpose:purpose.value,
     p1:p1.value,p2:p2.value,p3:p3.value,p4:p4.value,p5:p5.value,p6:p6.value,
     s1:s1.value,s2:s2.value,driver:driver.value
   });
 
-  fetch(SCRIPT_URL + "?" + params)
-    .then(() => alert("Запис додано"));
+  fetch(SCRIPT_URL+"?"+params).then(()=>alert("Запис додано"));
 }
 </script>
 
