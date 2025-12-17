@@ -2,235 +2,214 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Запис виїзду</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Журнал виїздів</title>
 
 <style>
-:root {
-  --green: #0f766e;
-  --green-light: #d1fae5;
-  --border: #d1d5db;
-}
-
-* { box-sizing: border-box; }
-
 body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background: #eef5f1;
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
-  background: #f0fdf4;
-}
-
-.container {
-  max-width: 520px;
-  margin: auto;
   padding: 16px;
 }
 
 .card {
+  max-width: 520px;
+  margin: auto;
   background: #fff;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  box-shadow: 0 12px 30px rgba(0,0,0,.12);
 }
 
-h1 {
+h2 {
   margin-top: 0;
-  color: var(--green);
-}
-
-.field {
-  margin-top: 16px;
+  color: #0f766e;
 }
 
 label {
   display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.input {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  font-size: 16px;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--green);
-  background: var(--green-light);
-}
-
-button {
-  width: 100%;
-  margin-top: 24px;
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
-  background: var(--green);
-  color: white;
-  font-size: 16px;
+  margin-top: 14px;
   font-weight: 600;
 }
 
-button:active {
-  transform: scale(.98);
-}
-
-/* AUTOCOMPLETE (desktop) */
-.dropdown {
-  position: absolute;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,.12);
-  max-height: 220px;
-  overflow-y: auto;
+input, select {
   width: 100%;
-  z-index: 10;
-}
-
-.dropdown div {
   padding: 12px;
-  cursor: pointer;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  box-sizing: border-box;
 }
 
-.dropdown div:hover {
-  background: var(--green-light);
+input:focus, select:focus {
+  outline: none;
+  border-color: #0f766e;
 }
 
-/* BOTTOM SHEET */
-.sheet {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.4);
-  display: none;
+.autocomplete {
+  position: relative;
 }
 
-.sheet.active { display: block; }
-
-.sheet-box {
+.list {
   position: absolute;
-  bottom: 0;
+  top: 100%;
   left: 0;
   right: 0;
   background: #fff;
-  border-radius: 20px 20px 0 0;
-  padding: 16px;
-  max-height: 80vh;
-  overflow: auto;
+  border-radius: 12px;
+  margin-top: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  z-index: 100;
+}
+
+.list div {
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.list div:hover {
+  background: #ecfdf5;
+}
+
+button {
+  margin-top: 22px;
+  width: 100%;
+  padding: 14px;
+  font-size: 17px;
+  border-radius: 14px;
+  border: none;
+  background: #0f766e;
+  color: white;
 }
 </style>
 </head>
 
 <body>
+<div class="card">
 
-<div class="container">
-  <div class="card">
-    <h1>Запис виїзду</h1>
+<h2>Запис виїзду</h2>
 
-    <div class="field">
-      <label>Тип екіпажу</label>
-      <select id="type" class="input">
-        <option value="">Оберіть</option>
-        <option>Бойовий</option>
-        <option>Не бойовий</option>
-      </select>
-    </div>
+<label>Тип екіпажу</label>
+<select id="type">
+  <option value="">Оберіть</option>
+  <option>Бойовий</option>
+  <option>Не бойовий</option>
+</select>
 
-    <div class="field">
-      <label>Звідки</label>
-      <input class="input" id="from" readonly>
-    </div>
-
-    <div class="field">
-      <label>Куди</label>
-      <input class="input" id="to" readonly>
-    </div>
-
-    <div class="field" id="purposeField" style="display:none">
-      <label>Мета</label>
-      <input class="input" id="purpose" readonly>
-    </div>
-
-    <h3>Склад екіпажу</h3>
-    <div id="crew"></div>
-
-    <button onclick="send()">Відправити</button>
-  </div>
+<label>Звідки</label>
+<div class="autocomplete">
+  <input id="from">
+  <div class="list" id="fromList"></div>
 </div>
 
-<div class="sheet" id="sheet">
-  <div class="sheet-box">
-    <input class="input" id="sheetInput" placeholder="Введіть...">
-    <div id="sheetList"></div>
-  </div>
+<label>Куди</label>
+<div class="autocomplete">
+  <input id="to">
+  <div class="list" id="toList"></div>
+</div>
+
+<label id="purposeLabel" style="display:none;">Мета</label>
+<div class="autocomplete">
+  <input id="purpose" style="display:none;">
+  <div class="list" id="purposeList"></div>
+</div>
+
+<h3>Склад екіпажу</h3>
+
+<div class="autocomplete"><input id="p1" placeholder="1 людина"><div class="list"></div></div>
+<div class="autocomplete"><input id="p2" placeholder="2 людина"><div class="list"></div></div>
+<div class="autocomplete"><input id="p3" placeholder="3 людина"><div class="list"></div></div>
+<div class="autocomplete"><input id="p4" placeholder="4 людина"><div class="list"></div></div>
+<div class="autocomplete"><input id="p5" placeholder="5 людина"><div class="list"></div></div>
+<div class="autocomplete"><input id="p6" placeholder="6 людина"><div class="list"></div></div>
+
+<div class="autocomplete"><input id="s1" placeholder="1 супровід"><div class="list"></div></div>
+<div class="autocomplete"><input id="s2" placeholder="2 супровід"><div class="list"></div></div>
+
+<div class="autocomplete"><input id="driver" placeholder="Водій"><div class="list"></div></div>
+
+<button onclick="send()">Відправити</button>
+
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmsbybL9Ka-6VRJZIuWLuh4YV7ojdSBywxvMTq9zI4gdW_VA3Hhwj4O3ACzvT3c50S/exec";
 
-let DATA = {};
-let activeInput = null;
+function bindAutocomplete(input, list, source){
+  input.addEventListener("input", () => {
+    const v = input.value.trim().toLowerCase();
+    list.innerHTML = "";
+    if (!v) return;
 
-fetch(SCRIPT_URL).then(r=>r.json()).then(d=>DATA=d);
+    source
+      .filter(x => x.toLowerCase().includes(v))
+      .slice(0, 20)
+      .forEach(x => {
+        const div = document.createElement("div");
+        div.textContent = x;
+        div.onclick = () => {
+          input.value = x;
+          list.innerHTML = "";
+        };
+        list.appendChild(div);
+      });
+  });
 
-const crewBox = document.getElementById("crew");
-["1 людина","2 людина","3 людина","4 людина","5 людина","6 людина","1 супровід","2 супровід","Водій"]
-.forEach(t=>{
-  const i=document.createElement("input");
-  i.className="input";
-  i.placeholder=t;
-  i.readOnly=true;
-  crewBox.appendChild(i);
-  bindAutocomplete(i,"people");
-});
-
-bindAutocomplete(from,"locations");
-bindAutocomplete(to,"locations");
-bindAutocomplete(purpose,"purposes");
-
-type.onchange=()=>purposeField.style.display=
-  type.value==="Не бойовий"?"block":"none";
-
-function bindAutocomplete(input,key){
-  input.onclick=()=>{
-    activeInput=input;
-    openSheet(DATA[key]||[]);
-  }
-}
-
-function openSheet(list){
-  sheet.classList.add("active");
-  sheetInput.value="";
-  renderList(list);
-  sheetInput.oninput=()=>{
-    const q=sheetInput.value.toLowerCase();
-    renderList(list.filter(v=>v.toLowerCase().includes(q)));
-  };
-}
-
-function renderList(arr){
-  sheetList.innerHTML="";
-  arr.forEach(v=>{
-    const d=document.createElement("div");
-    d.textContent=v;
-    d.onclick=()=>{
-      activeInput.value=v;
-      sheet.classList.remove("active");
-    };
-    sheetList.appendChild(d);
+  // закриття списку при кліку поза полем
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !list.contains(e.target)) {
+      list.innerHTML = "";
+    }
   });
 }
 
-sheet.onclick=e=>{
-  if(e.target===sheet) sheet.classList.remove("active");
-}
+// 🔹 Завантаження даних
+fetch(SCRIPT_URL)
+  .then(r => r.json())
+  .then(DATA => {
 
+    // 🔹 Локації
+    bindAutocomplete(from, fromList, DATA.locations);
+    bindAutocomplete(to, toList, DATA.locations);
+
+    // 🔹 Мета
+    bindAutocomplete(purpose, purposeList, DATA.purposes);
+
+    // 🔹 Люди
+    document.querySelectorAll(".autocomplete").forEach(box => {
+      const input = box.querySelector("input");
+      const list  = box.querySelector(".list");
+      if (input && list && !["from","to","purpose"].includes(input.id)) {
+        bindAutocomplete(input, list, DATA.people);
+      }
+    });
+
+  });
+
+// 🔹 Тип екіпажу
+type.onchange = () => {
+  const show = type.value === "Не бойовий";
+  purpose.style.display = show ? "block" : "none";
+  purposeLabel.style.display = show ? "block" : "none";
+  if (!show) purpose.value = "";
+};
+
+// 🔹 Відправка
 function send(){
-  alert("Запис додано");
+  const params = new URLSearchParams({
+    type:type.value, from:from.value, to:to.value,
+    purpose:purpose.value,
+    p1:p1.value,p2:p2.value,p3:p3.value,
+    p4:p4.value,p5:p5.value,p6:p6.value,
+    s1:s1.value,s2:s2.value,driver:driver.value
+  });
+
+  fetch(SCRIPT_URL + "?" + params)
+    .then(() => alert("Запис додано"));
 }
 </script>
-
 </body>
 </html>
