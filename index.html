@@ -4,25 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Запис виїзду</title>
-
 <style>
-/* -------------------- ТЕМНА ТЕМА (GitHub style) -------------------- */
 :root{
   --bg:#0d1117;
   --card:#161b22;
   --border:#30363d;
   --text:#e6edf3;
+  --muted:#9ca3af;
   --green:#2dd4bf;
   --green-soft:#0f766e22;
 }
-
+*{
+  box-sizing:border-box;
+}
 body{
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
   background:var(--bg);
   color:var(--text);
 }
-
 .card{
   max-width:520px;
   margin:20px auto;
@@ -30,32 +30,25 @@ body{
   padding:22px;
   border-radius:18px;
   box-shadow:0 10px 25px rgba(0,0,0,.4);
-  animation:fadeIn .4s ease;
+  position:relative;
+  overflow:visible;
 }
-
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(10px);}
-  to{opacity:1; transform:translateY(0);}
-}
-
 h1{
-  margin-top:0;
+  margin:0 0 4px;
   color:var(--green);
   font-size:22px;
 }
-
 .section{
   margin-top:22px;
+  position:relative;
+  overflow:visible;
 }
-
-/* -------------------- ПІДКАЗКИ -------------------- */
 label.title{
   font-weight:600;
   display:flex;
   align-items:center;
   gap:6px;
 }
-
 .info{
   width:18px;
   height:18px;
@@ -69,7 +62,6 @@ label.title{
   position:relative;
   color:var(--text);
 }
-
 .info:hover::after{
   content:attr(data-text);
   position:absolute;
@@ -83,17 +75,15 @@ label.title{
   font-size:12px;
   white-space:nowrap;
   box-shadow:0 4px 12px rgba(0,0,0,.4);
-  animation:fadeIn .2s ease;
 }
 
-/* -------------------- RADIO CARDS -------------------- */
+/* RADIO */
 .radio-group{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
   margin-top:10px;
 }
-
 .radio{
   border:1px solid var(--border);
   border-radius:14px;
@@ -103,123 +93,116 @@ label.title{
   align-items:center;
   gap:10px;
   background:var(--card);
-  transition:.2s;
 }
-
-.radio:hover{
-  background:#1f2937;
-  transform:translateY(-2px);
-}
-
-.radio input{
-  display:none;
-}
-
+.radio:hover{background:#1f2937;}
+.radio input{display:none;}
 .radio .dot{
   width:18px;
   height:18px;
   border-radius:50%;
   border:2px solid var(--green);
-  transition:.2s;
 }
-
 .radio input:checked + .dot{
   background:var(--green);
   box-shadow:0 0 8px var(--green);
 }
-
 .radio input:checked ~ span{
   font-weight:600;
   color:var(--green);
 }
 
-/* -------------------- INPUTS -------------------- */
+/* INPUTS */
 input{
   width:100%;
   padding:12px;
   border-radius:12px;
   border:1px solid var(--border);
   font-size:15px;
-  box-sizing:border-box;
   background:var(--bg);
   color:var(--text);
-  transition:.2s;
 }
-
 input:focus{
   border-color:var(--green);
   box-shadow:0 0 0 3px var(--green-soft);
+  outline:none;
 }
 
-/* -------------------- AUTOCOMPLETE -------------------- */
+/* AUTOCOMPLETE */
 .ac-wrap{
   position:relative;
   margin-top:8px;
+  margin-bottom:24px;
+  overflow:visible;
 }
-
+.ac-wrap input{
+  position:relative;
+  z-index:2;
+}
 .ac-list{
   position:absolute;
   top:100%;
   left:0;
   right:0;
+  margin-top:4px;
   background:var(--card);
   border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.4);
+  box-shadow:0 10px 25px rgba(0,0,0,.7);
   max-height:220px;
   overflow:auto;
-  z-index:10;
   display:none;
-  animation:fadeIn .2s ease;
+  z-index:9999;
 }
-
 .ac-item{
   padding:10px 14px;
   cursor:pointer;
-  transition:.15s;
+  font-size:14px;
 }
-
 .ac-item:hover{
   background:#1f2937;
-  transform:translateX(4px);
 }
 
-/* -------------------- СКЛАД ЕКІПАЖУ -------------------- */
+/* TIME ROW */
+.time-row{
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+}
+.time-row input[type="date"],
+.time-row input[type="time"]{
+  flex:1;
+  padding:10px;
+  font-size:14px;
+}
+
+/* CREW */
 .crew-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
   margin-top:10px;
+  position:relative;
+  overflow:visible;
 }
-
 .crew-item{
   border:1px solid var(--border);
   border-radius:14px;
   padding:10px;
   background:var(--card);
-  transition:.2s;
+  position:relative;
+  overflow:visible;
 }
-
-.crew-item:hover{
-  background:#1f2937;
-  transform:translateY(-1px);
-}
-
 .crew-label{
   font-size:12px;
-  color:#9ca3af;
+  color:var(--muted);
   margin-bottom:4px;
 }
-
-.crew-input-wrap{
-  position:relative;
-}
-
-/* водій на всю ширину */
 .crew-grid-full{
   margin-top:10px;
+  position:relative;
+  overflow:visible;
 }
 
-/* -------------------- BUTTON -------------------- */
+/* BUTTON */
 button{
   margin-top:24px;
   width:100%;
@@ -230,189 +213,182 @@ button{
   border:none;
   border-radius:16px;
   font-weight:600;
-  transition:.2s;
+  cursor:pointer;
 }
-
 button:hover{
   background:#22b3a0;
-  transform:translateY(-2px);
 }
 </style>
 </head>
-
 <body>
 <div class="card">
-<h1>Запис виїзду</h1>
+  <h1>Запис виїзду</h1>
 
-<!-- Тип екіпажу -->
-<div class="section">
-  <label class="title">Тип екіпажу
-    <span class="info" data-text="Бойовий — розвідка та ураження. Не бойовий — облаштування, забезпечення, рекогностування тощо.">!</span>
-  </label>
-
-  <div class="radio-group">
-    <label class="radio">
-      <input type="radio" name="type" value="Бойовий" checked>
-      <span class="dot"></span>
-      <span>Бойовий</span>
+  <!-- Тип екіпажу -->
+  <div class="section">
+    <label class="title">Тип екіпажу
+      <span class="info" data-text="Бойовий — чергування, розвідка, ураження. Не бойовий — забезпечення, рекогностування тощо.">!</span>
     </label>
-
-    <label class="radio">
-      <input type="radio" name="type" value="Не бойовий">
-      <span class="dot"></span>
-      <span>Не бойовий</span>
-    </label>
-  </div>
-</div>
-
-<!-- Час -->
-<div class="section">
-  <label class="title">Час та дата</label>
-
-  <div class="radio-group">
-    <label class="radio">
-      <input type="radio" name="timeMode" value="auto" checked>
-      <span class="dot"></span>
-      <span>Автоматично</span>
-    </label>
-
-    <label class="radio">
-      <input type="radio" name="timeMode" value="manual">
-      <span class="dot"></span>
-      <span>Вручну</span>
-    </label>
+    <div class="radio-group">
+      <label class="radio">
+        <input type="radio" name="type" value="Бойовий" checked>
+        <span class="dot"></span>
+        <span>Бойовий</span>
+      </label>
+      <label class="radio">
+        <input type="radio" name="type" value="Не бойовий">
+        <span class="dot"></span>
+        <span>Не бойовий</span>
+      </label>
+    </div>
   </div>
 
-  <div id="manualTime" style="display:none;margin-top:12px">
-    <input type="date" id="dateInput">
-    <input type="time" id="timeInput" style="margin-top:10px">
-  </div>
-</div>
-
-<!-- Мета (для не бойового) -->
-<div class="section" id="purposeSection" style="display:none">
-  <label class="title">Мета</label>
-  <div class="ac-wrap">
-    <input id="purpose">
-    <div class="ac-list" id="purposeList"></div>
-  </div>
-</div>
-
-<!-- Звідки -->
-<div class="section">
-  <label class="title">Звідки</label>
-  <div class="ac-wrap">
-    <input id="from">
-    <div class="ac-list" id="fromList"></div>
-  </div>
-</div>
-
-<!-- Куди -->
-<div class="section">
-  <label class="title">Куди</label>
-  <div class="ac-wrap">
-    <input id="to">
-    <div class="ac-list" id="toList"></div>
-  </div>
-</div>
-
-<!-- Склад екіпажу -->
-<div class="section">
-  <label class="title">Склад екіпажу</label>
-
-  <div class="crew-grid">
-    <div class="crew-item">
-      <div class="crew-label">1 людина</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="p1" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
-      </div>
+  <!-- Час -->
+  <div class="section">
+    <label class="title">Час та дата</label>
+    <div class="radio-group">
+      <label class="radio">
+        <input type="radio" name="timeMode" value="auto" checked>
+        <span class="dot"></span>
+        <span>Автоматично</span>
+      </label>
+      <label class="radio">
+        <input type="radio" name="timeMode" value="manual">
+        <span class="dot"></span>
+        <span>Вручну</span>
+      </label>
     </div>
-
-    <div class="crew-item">
-      <div class="crew-label">2 людина</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="p2" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
-      </div>
-    </div>
-
-    <div class="crew-item">
-      <div class="crew-label">3 людина</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="p3" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
-      </div>
-    </div>
-
-    <div class="crew-item">
-      <div class="crew-label">4 людина</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="p4" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
-      </div>
-    </div>
-
-    <div class="crew-item">
-      <div class="crew-label">5 людина</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="p5" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
-      </div>
-    </div>
-
-    <div class="crew-item">
-      <div class="crew-label">6 людина</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="p6" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
-      </div>
-    </div>
-
-    <div class="crew-item">
-      <div class="crew-label">1 супровід</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="s1" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
-      </div>
-    </div>
-
-    <div class="crew-item">
-      <div class="crew-label">2 супровід</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="s2" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
+    <div id="manualTime" style="display:none;">
+      <div class="time-row">
+        <input type="date" id="dateInput">
+        <input type="time" id="timeInput">
       </div>
     </div>
   </div>
 
-  <div class="crew-grid-full">
-    <div class="crew-item">
-      <div class="crew-label">Водій</div>
-      <div class="ac-wrap crew-input-wrap">
-        <input id="driver" placeholder="Введіть ПІБ">
-        <div class="ac-list"></div>
+  <!-- Мета -->
+  <div class="section" id="purposeSection" style="display:none;">
+    <label class="title">Мета</label>
+    <div class="ac-wrap">
+      <input id="purpose" placeholder="Оберіть або введіть мету">
+      <div class="ac-list" id="purposeList"></div>
+    </div>
+  </div>
+
+  <!-- Звідки -->
+  <div class="section">
+    <label class="title">Звідки</label>
+    <div class="ac-wrap">
+      <input id="from" placeholder="Оберіть або введіть локацію">
+      <div class="ac-list" id="fromList"></div>
+    </div>
+  </div>
+
+  <!-- Куди -->
+  <div class="section">
+    <label class="title">Куди</label>
+    <div class="ac-wrap">
+      <input id="to" placeholder="Оберіть або введіть локацію">
+      <div class="ac-list" id="toList"></div>
+    </div>
+  </div>
+
+  <!-- Склад екіпажу -->
+  <div class="section">
+    <label class="title">Склад екіпажу</label>
+
+    <div class="crew-grid">
+      <div class="crew-item">
+        <div class="crew-label">1 людина</div>
+        <div class="ac-wrap">
+          <input id="p1" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
+      </div>
+
+      <div class="crew-item">
+        <div class="crew-label">2 людина</div>
+        <div class="ac-wrap">
+          <input id="p2" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
+      </div>
+
+      <div class="crew-item">
+        <div class="crew-label">3 людина</div>
+        <div class="ac-wrap">
+          <input id="p3" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
+      </div>
+
+      <div class="crew-item">
+        <div class="crew-label">4 людина</div>
+        <div class="ac-wrap">
+          <input id="p4" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
+      </div>
+
+      <div class="crew-item">
+        <div class="crew-label">5 людина</div>
+        <div class="ac-wrap">
+          <input id="p5" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
+      </div>
+
+      <div class="crew-item">
+        <div class="crew-label">6 людина</div>
+        <div class="ac-wrap">
+          <input id="p6" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
+      </div>
+
+      <div class="crew-item">
+        <div class="crew-label">1 супровід</div>
+        <div class="ac-wrap">
+          <input id="s1" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
+      </div>
+
+      <div class="crew-item">
+        <div class="crew-label">2 супровід</div>
+        <div class="ac-wrap">
+          <input id="s2" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="crew-grid-full">
+      <div class="crew-item">
+        <div class="crew-label">Водій</div>
+        <div class="ac-wrap">
+          <input id="driver" placeholder="Введіть ПІБ">
+          <div class="ac-list"></div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<button onclick="send()">Відправити</button>
+  <button type="button" onclick="send()">Відправити</button>
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmsbybL9Ka-6VRJZIuWLuh4YV7ojdSBywxvMTq9zI4gdW_VA3Hhwj4O3ACzvT3c50S/exec";
 
-/* -------------------- AUTOCOMPLETE З GOOGLE SCRIPT ДАНИХ -------------------- */
+/* AUTOCOMPLETE BINDING */
 function bindAC(input, list, source){
   input.addEventListener("input", () => {
     const v = input.value.trim().toLowerCase();
     list.innerHTML = "";
-    if (!v) {
+    if (!v){
       list.style.display = "none";
       return;
     }
-
     source
       .filter(x => x.toLowerCase().includes(v))
       .slice(0, 20)
@@ -426,7 +402,6 @@ function bindAC(input, list, source){
         };
         list.appendChild(d);
       });
-
     list.style.display = list.children.length ? "block" : "none";
   });
 
@@ -437,84 +412,85 @@ function bindAC(input, list, source){
   });
 }
 
-/* -------------------- ЗАВАНТАЖЕННЯ ДАНИХ З SCRIPT_URL -------------------- */
+/* LOAD DATA */
 fetch(SCRIPT_URL)
   .then(r => r.json())
   .then(DATA => {
-    // Локації
     const from = document.getElementById("from");
     const fromList = document.getElementById("fromList");
     const to = document.getElementById("to");
     const toList = document.getElementById("toList");
+    const purpose = document.getElementById("purpose");
+    const purposeList = document.getElementById("purposeList");
 
     bindAC(from, fromList, DATA.locations || []);
     bindAC(to, toList, DATA.locations || []);
-
-    // Мета
-    const purpose = document.getElementById("purpose");
-    const purposeList = document.getElementById("purposeList");
     bindAC(purpose, purposeList, DATA.purposes || []);
 
-    // Люди (p1–p6, s1–s2, driver)
-    document.querySelectorAll(".crew-input-wrap").forEach(wrap => {
+    document.querySelectorAll(".crew-item .ac-wrap").forEach(wrap => {
       const input = wrap.querySelector("input");
       const list  = wrap.querySelector(".ac-list");
       bindAC(input, list, DATA.people || []);
     });
   });
 
-/* -------------------- ПЕРЕМИКАЧ ЧАСУ -------------------- */
-document.querySelectorAll('input[name="timeMode"]').forEach(r => {
-  r.addEventListener("change", () => {
+/* TIME MODE TOGGLE */
+document.querySelectorAll('input[name="timeMode"]').forEach(radio => {
+  radio.addEventListener("change", () => {
     const manualTime = document.getElementById("manualTime");
-    manualTime.style.display = (r.value === "manual" && r.checked) ? "block" : manualTime.style.display;
-    if (r.value === "auto" && r.checked) {
+    const dateInput = document.getElementById("dateInput");
+    const timeInput = document.getElementById("timeInput");
+    if (radio.value === "manual" && radio.checked){
+      manualTime.style.display = "block";
+    } else if (radio.value === "auto" && radio.checked){
       manualTime.style.display = "none";
-      document.getElementById("dateInput").value = "";
-      document.getElementById("timeInput").value = "";
+      dateInput.value = "";
+      timeInput.value = "";
     }
   });
 });
 
-/* -------------------- ПЕРЕМИКАЧ МЕТИ ДЛЯ НЕ БОЙОВОГО -------------------- */
-document.querySelectorAll('input[name="type"]').forEach(r => {
-  r.addEventListener("change", () => {
+/* PURPOSE VISIBILITY BY TYPE */
+document.querySelectorAll('input[name="type"]').forEach(radio => {
+  radio.addEventListener("change", () => {
     const purposeSection = document.getElementById("purposeSection");
-    if (r.value === "Не бойовий" && r.checked) {
+    const purpose = document.getElementById("purpose");
+    if (radio.value === "Не бойовий" && radio.checked){
       purposeSection.style.display = "block";
-    } else if (r.value === "Бойовий" && r.checked) {
+    } else if (radio.value === "Бойовий" && radio.checked){
       purposeSection.style.display = "none";
-      document.getElementById("purpose").value = "";
+      purpose.value = "";
     }
   });
 });
 
-/* -------------------- ВІДПРАВКА ДАНИХ -------------------- */
+/* SEND DATA */
 function send(){
   const type = document.querySelector('input[name="type"]:checked')?.value || "";
   const timeMode = document.querySelector('input[name="timeMode"]:checked')?.value || "";
 
   const params = new URLSearchParams({
-    type:type,
-    from:document.getElementById("from").value,
-    to:document.getElementById("to").value,
-    purpose:document.getElementById("purpose").value,
-    timeMode:timeMode,
-    date:document.getElementById("dateInput").value,
-    time:document.getElementById("timeInput").value,
-    p1:document.getElementById("p1").value,
-    p2:document.getElementById("p2").value,
-    p3:document.getElementById("p3").value,
-    p4:document.getElementById("p4").value,
-    p5:document.getElementById("p5").value,
-    p6:document.getElementById("p6").value,
-    s1:document.getElementById("s1").value,
-    s2:document.getElementById("s2").value,
-    driver:document.getElementById("driver").value
+    type: type,
+    from: document.getElementById("from").value,
+    to: document.getElementById("to").value,
+    purpose: document.getElementById("purpose").value,
+    timeMode: timeMode,
+    date: document.getElementById("dateInput").value,
+    time: document.getElementById("timeInput").value,
+    p1: document.getElementById("p1").value,
+    p2: document.getElementById("p2").value,
+    p3: document.getElementById("p3").value,
+    p4: document.getElementById("p4").value,
+    p5: document.getElementById("p5").value,
+    p6: document.getElementById("p6").value,
+    s1: document.getElementById("s1").value,
+    s2: document.getElementById("s2").value,
+    driver: document.getElementById("driver").value
   });
 
   fetch(SCRIPT_URL + "?" + params.toString())
-    .then(() => alert("Запис додано"));
+    .then(() => alert("Запис додано"))
+    .catch(() => alert("Помилка при відправці"));
 }
 </script>
 </body>
