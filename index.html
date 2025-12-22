@@ -1,497 +1,1013 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Запис виїзду</title>
-<style>
-:root{
-  --bg:#0d1117;
-  --card:#161b22;
-  --border:#30363d;
-  --text:#e6edf3;
-  --muted:#9ca3af;
-  --green:#2dd4bf;
-  --green-soft:#0f766e22;
-}
-*{
-  box-sizing:border-box;
-}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
-  background:var(--bg);
-  color:var(--text);
-}
-.card{
-  max-width:520px;
-  margin:20px auto;
-  background:var(--card);
-  padding:22px;
-  border-radius:18px;
-  box-shadow:0 10px 25px rgba(0,0,0,.4);
-  position:relative;
-  overflow:visible;
-}
-h1{
-  margin:0 0 4px;
-  color:var(--green);
-  font-size:22px;
-}
-.section{
-  margin-top:22px;
-  position:relative;
-  overflow:visible;
-}
-label.title{
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-.info{
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  border:1px solid var(--border);
-  font-size:12px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  position:relative;
-  color:var(--text);
-}
-.info:hover::after{
-  content:attr(data-text);
-  position:absolute;
-  bottom:130%;
-  left:50%;
-  transform:translateX(-50%);
-  background:#000;
-  color:#fff;
-  padding:6px 8px;
-  border-radius:8px;
-  font-size:12px;
-  white-space:nowrap;
-  box-shadow:0 4px 12px rgba(0,0,0,.4);
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Журнал виїздів / повернень</title>
 
-/* RADIO */
-.radio-group{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:10px;
-}
-.radio{
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:14px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:var(--card);
-}
-.radio:hover{background:#1f2937;}
-.radio input{display:none;}
-.radio .dot{
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  border:2px solid var(--green);
-}
-.radio input:checked + .dot{
-  background:var(--green);
-  box-shadow:0 0 8px var(--green);
-}
-.radio input:checked ~ span{
-  font-weight:600;
-  color:var(--green);
-}
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
 
-/* INPUTS */
-input{
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  font-size:15px;
-  background:var(--bg);
-  color:var(--text);
-}
-input:focus{
-  border-color:var(--green);
-  box-shadow:0 0 0 3px var(--green-soft);
-  outline:none;
-}
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-soft: #1b222c;
+      --input-bg: #0d1117;
+      --border: #30363d;
+      --accent: #2dd4bf;
+      --accent-soft: rgba(45, 212, 191, 0.25);
+      --text: #e6edf3;
+      --text-muted: #9ca3af;
+      --error: #f97373;
+      --radius: 10px;
+      --transition: 0.16s ease;
+    }
 
-/* AUTOCOMPLETE */
-.ac-wrap{
-  position:relative;
-  margin-top:8px;
-  margin-bottom:24px;
-  overflow:visible;
-}
-.ac-wrap input{
-  position:relative;
-  z-index:2;
-}
-.ac-list{
-  position:absolute;
-  top:100%;
-  left:0;
-  right:0;
-  margin-top:4px;
-  background:var(--card);
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.7);
-  max-height:220px;
-  overflow:auto;
-  display:none;
-  z-index:9999;
-}
-.ac-item{
-  padding:10px 14px;
-  cursor:pointer;
-  font-size:14px;
-}
-.ac-item:hover{
-  background:#1f2937;
-}
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-/* TIME ROW */
-.time-row{
-  display:flex;
-  gap:12px;
-  margin-top:12px;
-}
-.time-row input[type="date"],
-.time-row input[type="time"]{
-  flex:1;
-  padding:10px;
-  font-size:14px;
-}
+    .page-wrapper {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px 8px 32px;
+    }
 
-/* CREW */
-.crew-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:10px;
-  position:relative;
-  overflow:visible;
-}
-.crew-item{
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:10px;
-  background:var(--card);
-  position:relative;
-  overflow:visible;
-}
-.crew-label{
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:4px;
-}
-.crew-grid-full{
-  margin-top:10px;
-  position:relative;
-  overflow:visible;
-}
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 20px 16px 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
 
-/* BUTTON */
-button{
-  margin-top:24px;
-  width:100%;
-  padding:14px;
-  font-size:17px;
-  background:var(--green);
-  color:#000;
-  border:none;
-  border-radius:16px;
-  font-weight:600;
-  cursor:pointer;
-}
-button:hover{
-  background:#22b3a0;
-}
-</style>
+    h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .section {
+      margin-top: 18px;
+      position: relative;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .info {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      color: var(--text-muted);
+    }
+
+    .info:hover::after {
+      content: attr(data-text);
+      position: absolute;
+      bottom: 130%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      z-index: 50;
+    }
+
+    /* RADIO / TOGGLE */
+    .radio-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .radio {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface-soft);
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .radio:hover {
+      background: #1f2937;
+    }
+
+    .radio input {
+      display: none;
+    }
+
+    .radio .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+    }
+
+    .radio input:checked + .dot {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    .radio input:checked ~ span {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* INPUTS */
+    .text-input,
+    input[type="date"],
+    input[type="time"],
+    select.text-input {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 15px;
+      background: var(--input-bg);
+      color: var(--text);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+
+    .text-input::placeholder {
+      color: rgba(156, 163, 175, 0.9);
+    }
+
+    .text-input:focus,
+    input[type="date"]:focus,
+    input[type="time"]:focus,
+    select.text-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      background: #050813;
+    }
+
+    .time-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .time-row input[type="date"],
+    .time-row input[type="time"] {
+      flex: 1;
+      font-size: 14px;
+      padding: 9px 10px;
+    }
+
+    /* AUTOCOMPLETE (локальний, не глобальний) */
+    .ac-wrap {
+      position: relative;
+      margin-top: 4px;
+    }
+
+    .ac-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 4px;
+      background: var(--surface-soft);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+      z-index: 9999;
+    }
+
+    .ac-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .ac-item:hover {
+      background: #1f2937;
+    }
+
+    /* CREW */
+    .crew-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .crew-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 8px;
+      background: var(--surface-soft);
+    }
+
+    .crew-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .crew-grid-full {
+      margin-top: 10px;
+    }
+
+    /* BUTTON */
+    #submitBtn {
+      margin-top: 22px;
+      width: 100%;
+      padding: 14px;
+      font-size: 17px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+    }
+
+    #submitBtn:hover:not(:disabled) {
+      background: #22b3a0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      transform: translateY(-1px);
+    }
+
+    #submitBtn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    #status {
+      margin-top: 8px;
+      font-size: 12px;
+      min-height: 18px;
+      color: var(--text-muted);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 18px 14px 22px;
+        border-radius: 16px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="card">
-  <h1>Запис виїзду</h1>
+<div class="page-wrapper">
+  <div class="card">
 
-  <!-- Тип екіпажу -->
-  <div class="section">
-    <label class="title">Тип екіпажу
-      <span class="info" data-text="Бойовий — чергування, розвідка, ураження. Не бойовий — забезпечення, рекогностування тощо.">!</span>
-    </label>
-    <div class="radio-group">
-      <label class="radio">
-        <input type="radio" name="type" value="Бойовий" checked>
-        <span class="dot"></span>
-        <span>Бойовий</span>
-      </label>
-      <label class="radio">
-        <input type="radio" name="type" value="Не бойовий">
-        <span class="dot"></span>
-        <span>Не бойовий</span>
-      </label>
+    <h1>Журнал виїздів / повернень</h1>
+    <div class="subtitle">Заповніть дані екіпажу, маршруту, водія та часу.</div>
+
+    <!-- ОПЕРАЦІЯ -->
+    <div class="section">
+      <label class="title">Тип операції</label>
+      <div class="radio-group">
+        <label class="radio">
+          <input type="radio" name="operation" value="departure" checked>
+          <span class="dot"></span>
+          <span>Виїзд</span>
+        </label>
+        <label class="radio">
+          <input type="radio" name="operation" value="return">
+          <span class="dot"></span>
+          <span>Повернення</span>
+        </label>
+      </div>
     </div>
+
+    <!-- ТИП ЕКІПАЖУ -->
+    <div class="section">
+      <label class="title">Тип екіпажу</label>
+      <div class="radio-group">
+        <label class="radio">
+          <input type="radio" name="crewType" value="combat" checked>
+          <span class="dot"></span>
+          <span>Бойовий</span>
+        </label>
+        <label class="radio">
+          <input type="radio" name="crewType" value="noncombat">
+          <span class="dot"></span>
+          <span>Небойовий</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ДАТА/ЧАС -->
+    <div class="section">
+      <label class="title">Дата та час операції</label>
+      <div class="radio-group">
+        <label class="radio">
+          <input type="radio" name="datetimeMode" value="auto" checked>
+          <span class="dot"></span>
+          <span>Автоматично</span>
+        </label>
+        <label class="radio">
+          <input type="radio" name="datetimeMode" value="manual">
+          <span class="dot"></span>
+          <span>Вручну</span>
+        </label>
+      </div>
+
+      <div id="manualDatetimeBlock" class="hidden">
+        <div class="time-row">
+          <input type="date" id="manualDate" class="text-input">
+          <input type="time" id="manualTime" class="text-input">
+        </div>
+      </div>
+    </div>
+
+    <!-- ДАТА ВИЇЗДУ ДЛЯ ПОВЕРНЕННЯ -->
+    <div class="section hidden" id="departureDateSection">
+      <label class="title">Дата виїзду</label>
+      <select id="departureDateSelect" class="text-input">
+        <option value="">Оберіть дату виїзду</option>
+      </select>
+    </div>
+
+    <!-- МАРШРУТ -->
+    <div class="section">
+      <label class="title">Маршрут</label>
+
+      <!-- Звідки -->
+      <div id="fromBlock">
+        <div class="ac-wrap">
+          <input id="fromInput" class="text-input" placeholder="Звідки">
+          <div class="ac-list" id="fromList"></div>
+        </div>
+      </div>
+
+      <!-- Позиції (для повернення) -->
+      <div id="fromPositionsBlock" class="hidden" style="margin-top:10px;">
+        <label class="title" style="font-size:12px; font-weight:500;">Позиція</label>
+        <select id="fromPositionSelect" class="text-input">
+          <option value="">Оберіть позицію</option>
+        </select>
+      </div>
+
+      <!-- Куди -->
+      <div style="margin-top:12px;">
+        <div class="ac-wrap">
+          <input id="toInput" class="text-input" placeholder="Куди">
+          <div class="ac-list" id="toList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- МЕТА -->
+    <div class="section hidden" id="goalSection">
+      <label class="title">Мета виїзду</label>
+      <div class="ac-wrap">
+        <input id="goalInput" class="text-input" placeholder="Почніть вводити...">
+        <div class="ac-list" id="goalList"></div>
+      </div>
+    </div>
+
+    <!-- ЕКІПАЖ -->
+    <div class="section">
+      <label class="title">Екіпаж</label>
+
+      <div id="crewList" class="crew-grid"></div>
+
+      <button type="button" id="addCrewBtn" style="margin-top:14px;">
+        + Додати людину
+      </button>
+    </div>
+
+    <!-- ВОДІЙ / АВТО -->
+    <div class="section">
+      <label class="title">Водій / Авто</label>
+
+      <div class="ac-wrap">
+        <input id="driverInput" class="text-input" placeholder="Водій">
+        <div class="ac-list" id="driverList"></div>
+      </div>
+
+      <div class="ac-wrap" style="margin-top:12px;">
+        <input id="carInput" class="text-input" placeholder="Авто">
+        <div class="ac-list" id="carList"></div>
+      </div>
+    </div>
+
+    <!-- КНОПКА -->
+    <button id="submitBtn">Відправити</button>
+    <div id="status"></div>
+
   </div>
-
-  <!-- Час -->
-  <div class="section">
-    <label class="title">Час та дата</label>
-    <div class="radio-group">
-      <label class="radio">
-        <input type="radio" name="timeMode" value="auto" checked>
-        <span class="dot"></span>
-        <span>Автоматично</span>
-      </label>
-      <label class="radio">
-        <input type="radio" name="timeMode" value="manual">
-        <span class="dot"></span>
-        <span>Вручну</span>
-      </label>
-    </div>
-    <div id="manualTime" style="display:none;">
-      <div class="time-row">
-        <input type="date" id="dateInput">
-        <input type="time" id="timeInput">
-      </div>
-    </div>
-  </div>
-
-  <!-- Мета -->
-  <div class="section" id="purposeSection" style="display:none;">
-    <label class="title">Мета</label>
-    <div class="ac-wrap">
-      <input id="purpose" placeholder="Оберіть або введіть мету">
-      <div class="ac-list" id="purposeList"></div>
-    </div>
-  </div>
-
-  <!-- Звідки -->
-  <div class="section">
-    <label class="title">Звідки</label>
-    <div class="ac-wrap">
-      <input id="from" placeholder="Оберіть або введіть локацію">
-      <div class="ac-list" id="fromList"></div>
-    </div>
-  </div>
-
-  <!-- Куди -->
-  <div class="section">
-    <label class="title">Куди</label>
-    <div class="ac-wrap">
-      <input id="to" placeholder="Оберіть або введіть локацію">
-      <div class="ac-list" id="toList"></div>
-    </div>
-  </div>
-
-  <!-- Склад екіпажу -->
-  <div class="section">
-    <label class="title">Склад екіпажу</label>
-
-    <div class="crew-grid">
-      <div class="crew-item">
-        <div class="crew-label">1 людина</div>
-        <div class="ac-wrap">
-          <input id="p1" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-
-      <div class="crew-item">
-        <div class="crew-label">2 людина</div>
-        <div class="ac-wrap">
-          <input id="p2" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-
-      <div class="crew-item">
-        <div class="crew-label">3 людина</div>
-        <div class="ac-wrap">
-          <input id="p3" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-
-      <div class="crew-item">
-        <div class="crew-label">4 людина</div>
-        <div class="ac-wrap">
-          <input id="p4" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-
-      <div class="crew-item">
-        <div class="crew-label">5 людина</div>
-        <div class="ac-wrap">
-          <input id="p5" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-
-      <div class="crew-item">
-        <div class="crew-label">6 людина</div>
-        <div class="ac-wrap">
-          <input id="p6" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-
-      <div class="crew-item">
-        <div class="crew-label">1 супровід</div>
-        <div class="ac-wrap">
-          <input id="s1" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-
-      <div class="crew-item">
-        <div class="crew-label">2 супровід</div>
-        <div class="ac-wrap">
-          <input id="s2" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="crew-grid-full">
-      <div class="crew-item">
-        <div class="crew-label">Водій</div>
-        <div class="ac-wrap">
-          <input id="driver" placeholder="Введіть ПІБ">
-          <div class="ac-list"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <button type="button" onclick="send()">Відправити</button>
 </div>
-
 <script>
+/* ---------------------------------------------------------
+   ГЛОБАЛЬНІ ЗМІННІ
+--------------------------------------------------------- */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmsbybL9Ka-6VRJZIuWLuh4YV7ojdSBywxvMTq9zI4gdW_VA3Hhwj4O3ACzvT3c50S/exec";
 
-/* AUTOCOMPLETE BINDING */
-function bindAC(input, list, source){
+let BASE = {
+  people: [],
+  locations: [],
+  goals: [],
+  cars: []
+};
+
+let BASE_READY = false;
+
+/* ---------------------------------------------------------
+   1. ЗАВАНТАЖЕННЯ БАЗИ
+--------------------------------------------------------- */
+function loadBase() {
+  fetch(SCRIPT_URL + "?action=getBase")
+    .then(r => r.json())
+    .then(data => {
+      BASE = data;
+      BASE_READY = true;
+      initAutocompleteBindings();
+      initCrew();
+    })
+    .catch(err => {
+      console.error("Помилка завантаження бази:", err);
+    });
+}
+
+loadBase();
+
+/* ---------------------------------------------------------
+   2. AUTOCOMPLETE (локальний)
+--------------------------------------------------------- */
+function bindAutocomplete(input, listElement, sourceArray, type) {
   input.addEventListener("input", () => {
-    const v = input.value.trim().toLowerCase();
-    list.innerHTML = "";
-    if (!v){
-      list.style.display = "none";
+    const term = input.value.trim().toLowerCase();
+    listElement.innerHTML = "";
+
+    if (!term) {
+      listElement.style.display = "none";
       return;
     }
-    source
-      .filter(x => x.toLowerCase().includes(v))
-      .slice(0, 20)
-      .forEach(x => {
-        const d = document.createElement("div");
-        d.className = "ac-item";
-        d.textContent = x;
-        d.onclick = () => {
-          input.value = x;
-          list.style.display = "none";
-        };
-        list.appendChild(d);
-      });
-    list.style.display = list.children.length ? "block" : "none";
+
+    const matches = sourceArray
+      .filter(x => x.toLowerCase().includes(term))
+      .slice(0, 30);
+
+    // Якщо немає збігів — показуємо кнопку "Додати"
+    if (matches.length === 0) {
+      const addItem = document.createElement("div");
+      addItem.className = "ac-item";
+      addItem.style.color = "#2dd4bf";
+      addItem.textContent = `+ Додати "${input.value}"`;
+      addItem.onclick = () => {
+        addNewValueToBase(type, input.value);
+        listElement.style.display = "none";
+      };
+      listElement.appendChild(addItem);
+      listElement.style.display = "block";
+      return;
+    }
+
+    matches.forEach(text => {
+      const d = document.createElement("div");
+      d.className = "ac-item";
+      d.textContent = text;
+      d.onclick = () => {
+        input.value = text;
+        listElement.style.display = "none";
+      };
+      listElement.appendChild(d);
+    });
+
+    listElement.style.display = "block";
   });
 
+  // Закриття списку при кліку поза ним
   document.addEventListener("click", e => {
-    if (!input.contains(e.target) && !list.contains(e.target)) {
-      list.style.display = "none";
+    if (!input.contains(e.target) && !listElement.contains(e.target)) {
+      listElement.style.display = "none";
     }
   });
 }
 
-/* LOAD DATA */
-fetch(SCRIPT_URL)
-  .then(r => r.json())
-  .then(DATA => {
-    const from = document.getElementById("from");
-    const fromList = document.getElementById("fromList");
-    const to = document.getElementById("to");
-    const toList = document.getElementById("toList");
-    const purpose = document.getElementById("purpose");
-    const purposeList = document.getElementById("purposeList");
+/* ---------------------------------------------------------
+   3. АВТОДОДАВАННЯ НОВИХ ЗНАЧЕНЬ У БАЗУ
+--------------------------------------------------------- */
+function addNewValueToBase(type, value) {
+  if (!value.trim()) return;
 
-    bindAC(from, fromList, DATA.locations || []);
-    bindAC(to, toList, DATA.locations || []);
-    bindAC(purpose, purposeList, DATA.purposes || []);
+  fetch(`${SCRIPT_URL}?action=addValue&type=${type}&value=${encodeURIComponent(value)}`)
+    .then(r => r.json())
+    .then(res => {
+      if (res.ok) {
+        // Додаємо локально
+        BASE[type].push(value);
+        BASE[type] = [...new Set(BASE[type])];
+      }
+    })
+    .catch(err => console.error("Помилка автододавання:", err));
+}
 
-    document.querySelectorAll(".crew-item .ac-wrap").forEach(wrap => {
-      const input = wrap.querySelector("input");
-      const list  = wrap.querySelector(".ac-list");
-      bindAC(input, list, DATA.people || []);
-    });
+/* ---------------------------------------------------------
+   4. ІНІЦІАЛІЗАЦІЯ AUTOCOMPLETE
+--------------------------------------------------------- */
+function initAutocompleteBindings() {
+  // Маршрут
+  bindAutocomplete(
+    document.getElementById("fromInput"),
+    document.getElementById("fromList"),
+    BASE.locations,
+    "locations"
+  );
+
+  bindAutocomplete(
+    document.getElementById("toInput"),
+    document.getElementById("toList"),
+    BASE.locations,
+    "locations"
+  );
+
+  // Мета
+  bindAutocomplete(
+    document.getElementById("goalInput"),
+    document.getElementById("goalList"),
+    BASE.goals,
+    "goals"
+  );
+
+  // Водій
+  bindAutocomplete(
+    document.getElementById("driverInput"),
+    document.getElementById("driverList"),
+    BASE.people,
+    "people"
+  );
+
+  // Авто
+  bindAutocomplete(
+    document.getElementById("carInput"),
+    document.getElementById("carList"),
+    BASE.cars,
+    "cars"
+  );
+}
+
+/* ---------------------------------------------------------
+   5. ЕКІПАЖ — додавання рядків
+--------------------------------------------------------- */
+function initCrew() {
+  const crewList = document.getElementById("crewList");
+  crewList.innerHTML = "";
+
+  // Додаємо 2 рядки за замовчуванням
+  addCrewRow();
+  addCrewRow();
+
+  document.getElementById("addCrewBtn").onclick = addCrewRow;
+}
+
+function addCrewRow() {
+  const crewList = document.getElementById("crewList");
+
+  const wrap = document.createElement("div");
+  wrap.className = "crew-item";
+
+  const label = document.createElement("div");
+  label.className = "crew-label";
+  label.textContent = "Член екіпажу";
+
+  const acWrap = document.createElement("div");
+  acWrap.className = "ac-wrap";
+
+  const input = document.createElement("input");
+  input.className = "text-input";
+  input.placeholder = "Введіть ПІБ";
+
+  const list = document.createElement("div");
+  list.className = "ac-list";
+
+  acWrap.appendChild(input);
+  acWrap.appendChild(list);
+
+  wrap.appendChild(label);
+  wrap.appendChild(acWrap);
+
+  crewList.appendChild(wrap);
+
+  // Прив’язуємо autocomplete
+  bindAutocomplete(input, list, BASE.people, "people");
+}
+<script>
+/* ---------------------------------------------------------
+   6. ЛОГІКА ВИЇЗД / ПОВЕРНЕННЯ
+--------------------------------------------------------- */
+function initOperationLogic() {
+  document.querySelectorAll('input[name="operation"]').forEach(r => {
+    r.addEventListener("change", updateOperationMode);
   });
 
-/* TIME MODE TOGGLE */
-document.querySelectorAll('input[name="timeMode"]').forEach(radio => {
-  radio.addEventListener("change", () => {
-    const manualTime = document.getElementById("manualTime");
-    const dateInput = document.getElementById("dateInput");
-    const timeInput = document.getElementById("timeInput");
-    if (radio.value === "manual" && radio.checked){
-      manualTime.style.display = "block";
-    } else if (radio.value === "auto" && radio.checked){
-      manualTime.style.display = "none";
-      dateInput.value = "";
-      timeInput.value = "";
-    }
+  document.querySelectorAll('input[name="crewType"]').forEach(r => {
+    r.addEventListener("change", updateGoalVisibility);
   });
-});
 
-/* PURPOSE VISIBILITY BY TYPE */
-document.querySelectorAll('input[name="type"]').forEach(radio => {
-  radio.addEventListener("change", () => {
-    const purposeSection = document.getElementById("purposeSection");
-    const purpose = document.getElementById("purpose");
-    if (radio.value === "Не бойовий" && radio.checked){
-      purposeSection.style.display = "block";
-    } else if (radio.value === "Бойовий" && radio.checked){
-      purposeSection.style.display = "none";
-      purpose.value = "";
-    }
+  document.querySelectorAll('input[name="datetimeMode"]').forEach(r => {
+    r.addEventListener("change", updateDatetimeMode);
   });
-});
 
-/* SEND DATA */
-function send(){
-  const type = document.querySelector('input[name="type"]:checked')?.value || "";
-  const timeMode = document.querySelector('input[name="timeMode"]:checked')?.value || "";
+  updateOperationMode();
+  updateGoalVisibility();
+  updateDatetimeMode();
+}
+
+initOperationLogic();
+
+/* ---------------------------------------------------------
+   7. ПЕРЕМИКАННЯ: ВИЇЗД / ПОВЕРНЕННЯ
+--------------------------------------------------------- */
+function updateOperationMode() {
+  const op = document.querySelector('input[name="operation"]:checked').value;
+
+  const departureDateSection = document.getElementById("departureDateSection");
+  const fromBlock = document.getElementById("fromBlock");
+  const fromPositionsBlock = document.getElementById("fromPositionsBlock");
+  const toInput = document.getElementById("toInput");
+
+  if (op === "return") {
+    departureDateSection.classList.remove("hidden");
+    fromPositionsBlock.classList.add("hidden");
+    fromBlock.classList.add("hidden");
+
+    toInput.value = "ППД";
+    toInput.disabled = true;
+
+    loadDepartureDates();
+  } else {
+    departureDateSection.classList.add("hidden");
+    fromPositionsBlock.classList.add("hidden");
+    fromBlock.classList.remove("hidden");
+
+    toInput.disabled = false;
+    toInput.value = "";
+  }
+
+  updateGoalVisibility();
+}
+
+/* ---------------------------------------------------------
+   8. ПОКАЗ / ПРИХОВАННЯ МЕТИ
+--------------------------------------------------------- */
+function updateGoalVisibility() {
+  const op = document.querySelector('input[name="operation"]:checked').value;
+  const crewType = document.querySelector('input[name="crewType"]:checked').value;
+
+  const goalSection = document.getElementById("goalSection");
+
+  if (op === "departure" && crewType === "noncombat") {
+    goalSection.classList.remove("hidden");
+  } else {
+    goalSection.classList.add("hidden");
+    document.getElementById("goalInput").value = "";
+  }
+}
+
+/* ---------------------------------------------------------
+   9. ДАТА/ЧАС: АВТО / ВРУЧНУ
+--------------------------------------------------------- */
+function updateDatetimeMode() {
+  const mode = document.querySelector('input[name="datetimeMode"]:checked').value;
+  const block = document.getElementById("manualDatetimeBlock");
+
+  if (mode === "manual") {
+    block.classList.remove("hidden");
+  } else {
+    block.classList.add("hidden");
+    document.getElementById("manualDate").value = "";
+    document.getElementById("manualTime").value = "";
+  }
+}
+
+/* ---------------------------------------------------------
+   10. ЗАВАНТАЖЕННЯ ДАТ ВИЇЗДІВ (для повернення)
+--------------------------------------------------------- */
+function loadDepartureDates() {
+  fetch(SCRIPT_URL + "?action=getDepartureDates")
+    .then(r => r.json())
+    .then(dates => {
+      const select = document.getElementById("departureDateSelect");
+      select.innerHTML = `<option value="">Оберіть дату виїзду</option>`;
+
+      dates.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+        select.appendChild(opt);
+      });
+
+      select.onchange = () => {
+        loadPositionsForDate();
+      };
+    })
+    .catch(err => console.error("Помилка дат:", err));
+}
+
+/* ---------------------------------------------------------
+   11. ЗАВАНТАЖЕННЯ ПОЗИЦІЙ ДЛЯ ПОВЕРНЕННЯ
+--------------------------------------------------------- */
+function loadPositionsForDate() {
+  const date = document.getElementById("departureDateSelect").value;
+  const crewType = document.querySelector('input[name="crewType"]:checked').value;
+
+  if (!date) return;
+
+  fetch(`${SCRIPT_URL}?action=getPositions&date=${encodeURIComponent(date)}&crewType=${crewType}`)
+    .then(r => r.json())
+    .then(list => {
+      const block = document.getElementById("fromPositionsBlock");
+      const select = document.getElementById("fromPositionSelect");
+
+      select.innerHTML = `<option value="">Оберіть позицію</option>`;
+
+      if (!list || list.length === 0) {
+        block.classList.add("hidden");
+        return;
+      }
+
+      list.forEach(pos => {
+        const opt = document.createElement("option");
+        opt.value = pos;
+        opt.textContent = pos;
+        select.appendChild(opt);
+      });
+
+      block.classList.remove("hidden");
+
+      select.onchange = () => {
+        applyPositionToFrom();
+        loadLastRecord();
+      };
+    })
+    .catch(err => console.error("Помилка позицій:", err));
+}
+
+function applyPositionToFrom() {
+  const pos = document.getElementById("fromPositionSelect").value;
+  if (pos) document.getElementById("toInput").value = "ППД";
+}
+
+/* ---------------------------------------------------------
+   12. АВТОПІДТЯГУВАННЯ ОСТАННЬОГО ЗАПИСУ
+--------------------------------------------------------- */
+function loadLastRecord() {
+  const date = document.getElementById("departureDateSelect").value;
+  const position = document.getElementById("fromPositionSelect").value;
+  const crewType = document.querySelector('input[name="crewType"]:checked').value;
+
+  if (!date || !position) return;
+
+  fetch(`${SCRIPT_URL}?action=getLastRecord&date=${encodeURIComponent(date)}&position=${encodeURIComponent(position)}&crewType=${crewType}`)
+    .then(r => r.json())
+    .then(info => {
+      if (!info) return;
+
+      document.getElementById("driverInput").value = info.driver || "";
+      document.getElementById("carInput").value = info.car || "";
+
+      const crewList = document.getElementById("crewList");
+      crewList.innerHTML = "";
+
+      (info.crew || []).forEach(name => {
+        const wrap = document.createElement("div");
+        wrap.className = "crew-item";
+
+        const label = document.createElement("div");
+        label.className = "crew-label";
+        label.textContent = "Член екіпажу";
+
+        const acWrap = document.createElement("div");
+        acWrap.className = "ac-wrap";
+
+        const input = document.createElement("input");
+        input.className = "text-input";
+        input.value = name;
+
+        const list = document.createElement("div");
+        list.className = "ac-list";
+
+        acWrap.appendChild(input);
+        acWrap.appendChild(list);
+        wrap.appendChild(label);
+        wrap.appendChild(acWrap);
+        crewList.appendChild(wrap);
+
+        bindAutocomplete(input, list, BASE.people, "people");
+      });
+    })
+    .catch(err => console.error("Помилка автопідтягування:", err));
+}
+</script>
+<script>
+/* ---------------------------------------------------------
+   13. ВАЛІДАЦІЯ
+--------------------------------------------------------- */
+function validateForm(data) {
+  const errors = [];
+
+  if (!data.from) errors.push("Поле 'Звідки' обов'язкове.");
+  if (!data.to) errors.push("Поле 'Куди' обов'язкове.");
+
+  if (data.operation === "departure" &&
+      data.crewType === "noncombat" &&
+      !data.goal) {
+    errors.push("Для небойового екіпажу потрібно вказати мету.");
+  }
+
+  if (data.datetimeMode === "manual") {
+    if (!data.manualDate) errors.push("Вкажіть дату операції.");
+    if (!data.manualTime) errors.push("Вкажіть час операції.");
+  }
+
+  if (data.operation === "return" && !data.departureDateSearch) {
+    errors.push("Оберіть дату виїзду для повернення.");
+  }
+
+  if (data.driver && data.crew.includes(data.driver)) {
+    errors.push("Водій не може бути членом екіпажу одночасно.");
+  }
+
+  const duplicates = data.crew.filter((x, i, arr) => arr.indexOf(x) !== i);
+  if (duplicates.length > 0) {
+    errors.push("У екіпажі є повтори: " + duplicates.join(", "));
+  }
+
+  return errors;
+}
+
+/* ---------------------------------------------------------
+   14. ЗБІР ДАНИХ
+--------------------------------------------------------- */
+function collectFormData() {
+  const op = document.querySelector('input[name="operation"]:checked').value;
+
+  const crew = [...document.querySelectorAll("#crewList .crew-item input")]
+    .map(i => i.value.trim())
+    .filter(Boolean);
+
+  return {
+    operation: op,
+    crewType: document.querySelector('input[name="crewType"]:checked').value,
+
+    goal:
+      op === "departure"
+        ? document.getElementById("goalInput").value.trim()
+        : "",
+
+    from: document.getElementById("fromInput").value.trim(),
+    to: document.getElementById("toInput").value.trim(),
+
+    datetimeMode: document.querySelector('input[name="datetimeMode"]:checked').value,
+    manualDate: document.getElementById("manualDate").value,
+    manualTime: document.getElementById("manualTime").value,
+
+    departureDateSearch:
+      op === "return"
+        ? document.getElementById("departureDateSelect").value
+        : "",
+
+    crew: crew,
+    driver: document.getElementById("driverInput").value.trim(),
+    car: document.getElementById("carInput").value.trim()
+  };
+}
+
+/* ---------------------------------------------------------
+   15. ВІДПРАВКА ДАНИХ У ЖУРНАЛ
+--------------------------------------------------------- */
+function submitForm() {
+  const btn = document.getElementById("submitBtn");
+  const status = document.getElementById("status");
+
+  const data = collectFormData();
+  const errors = validateForm(data);
+
+  if (errors.length > 0) {
+    status.style.color = "#f97373";
+    status.textContent = errors.join(" ");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "⏳ Відправка...";
+  status.style.color = "#9ca3af";
+  status.textContent = "Обробка...";
 
   const params = new URLSearchParams({
-    type: type,
-    from: document.getElementById("from").value,
-    to: document.getElementById("to").value,
-    purpose: document.getElementById("purpose").value,
-    timeMode: timeMode,
-    date: document.getElementById("dateInput").value,
-    time: document.getElementById("timeInput").value,
-    p1: document.getElementById("p1").value,
-    p2: document.getElementById("p2").value,
-    p3: document.getElementById("p3").value,
-    p4: document.getElementById("p4").value,
-    p5: document.getElementById("p5").value,
-    p6: document.getElementById("p6").value,
-    s1: document.getElementById("s1").value,
-    s2: document.getElementById("s2").value,
-    driver: document.getElementById("driver").value
+    action: "saveRecord",
+    operation: data.operation,
+    crewType: data.crewType,
+    goal: data.goal,
+    from: data.from,
+    to: data.to,
+    datetimeMode: data.datetimeMode,
+    manualDate: data.manualDate,
+    manualTime: data.manualTime,
+    departureDateSearch: data.departureDateSearch,
+    driver: data.driver,
+    car: data.car,
+    crew: data.crew.join(",")
   });
 
   fetch(SCRIPT_URL + "?" + params.toString())
-    .then(() => alert("Запис додано"))
-    .catch(() => alert("Помилка при відправці"));
+    .then(r => r.json())
+    .then(res => {
+      if (res.ok) {
+        btn.textContent = "✅ Відправлено";
+        status.style.color = "#2dd4bf";
+        status.textContent = "Дані успішно збережено";
+
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = "Відправити";
+          resetForm();
+        }, 1500);
+      } else {
+        throw new Error("Помилка збереження");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      btn.disabled = false;
+      btn.textContent = "❌ Помилка";
+      status.style.color = "#f97373";
+      status.textContent = "Не вдалося зберегти дані";
+
+      setTimeout(() => {
+        btn.textContent = "Відправити";
+      }, 1500);
+    });
 }
+
+/* ---------------------------------------------------------
+   16. ОЧИЩЕННЯ ФОРМИ ПІСЛЯ УСПІХУ
+--------------------------------------------------------- */
+function resetForm() {
+  document.getElementById("fromInput").value = "";
+  document.getElementById("toInput").value = "";
+  document.getElementById("goalInput").value = "";
+  document.getElementById("driverInput").value = "";
+  document.getElementById("carInput").value = "";
+
+  document.getElementById("manualDate").value = "";
+  document.getElementById("manualTime").value = "";
+
+  document.getElementById("departureDateSelect").value = "";
+  document.getElementById("fromPositionSelect").value = "";
+
+  initCrew(); // перегенеруємо екіпаж
+}
+
+/* ---------------------------------------------------------
+   17. ПРИВ’ЯЗКА КНОПКИ
+--------------------------------------------------------- */
+document.getElementById("submitBtn").addEventListener("click", submitForm);
 </script>
-</body>
-</html>
