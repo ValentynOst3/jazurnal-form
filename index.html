@@ -107,7 +107,6 @@
       z-index: 50;
     }
 
-    /* RADIO / TOGGLE */
     .radio-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -152,7 +151,6 @@
       color: var(--accent);
     }
 
-    /* INPUTS */
     .text-input,
     input[type="date"],
     input[type="time"],
@@ -187,14 +185,6 @@
       margin-top: 8px;
     }
 
-    .time-row input[type="date"],
-    .time-row input[type="time"] {
-      flex: 1;
-      font-size: 14px;
-      padding: 9px 10px;
-    }
-
-    /* AUTOCOMPLETE (локальний, не глобальний) */
     .ac-wrap {
       position: relative;
       margin-top: 4px;
@@ -225,7 +215,6 @@
       background: #1f2937;
     }
 
-    /* CREW */
     .crew-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -246,11 +235,6 @@
       margin-bottom: 4px;
     }
 
-    .crew-grid-full {
-      margin-top: 10px;
-    }
-
-    /* BUTTON */
     #submitBtn {
       margin-top: 22px;
       width: 100%;
@@ -287,16 +271,6 @@
 
     .hidden {
       display: none;
-    }
-
-    @media (max-width: 480px) {
-      .card {
-        padding: 18px 14px 22px;
-        border-radius: 16px;
-      }
-      h1 {
-        font-size: 20px;
-      }
     }
   </style>
 </head>
@@ -447,7 +421,7 @@
 /* ---------------------------------------------------------
    ГЛОБАЛЬНІ ЗМІННІ
 --------------------------------------------------------- */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmsbybL9Ka-6VRJZIuWLuh4YV7ojdSBywxvMTq9zI4gdW_VA3Hhwj4O3ACzvT3c50S/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz94lB1DwpIHk2CfWc1qMY7Y6UOp6Sd7vh6mTknzNaUPnGxuCY2u8s7DHfM3moN0jJ/exec";
 
 let BASE = {
   people: [],
@@ -638,6 +612,7 @@ function addCrewRow() {
   // Прив’язуємо autocomplete
   bindAutocomplete(input, list, BASE.people, "people");
 }
+</script>
 <script>
 /* ---------------------------------------------------------
    6. ЛОГІКА ВИЇЗД / ПОВЕРНЕННЯ
@@ -1011,3 +986,5 @@ function resetForm() {
 --------------------------------------------------------- */
 document.getElementById("submitBtn").addEventListener("click", submitForm);
 </script>
+</body>
+</html>
