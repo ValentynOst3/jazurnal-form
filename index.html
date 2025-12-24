@@ -63,6 +63,7 @@
       border-radius: 12px;
       padding: 24px 20px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+      position: relative; /* ← ДОДАНО */
     }
 
     h2 {
@@ -292,8 +293,9 @@
       display: none;
       opacity: 0;
       transition: opacity 0.15s ease;
-      z-index: 9999;
-      transform: translateY(4px);
+      z-index: 2147483647;
+      transform: translateY(6px);
+      margin-top: 2px;
     }
 
     #globalSuggestBox.visible {
@@ -1049,10 +1051,14 @@ function positionSuggestBox() {
 
   const rect = activeInput.getBoundingClientRect();
 
-  suggestBox.style.top = rect.bottom + "px";
-  suggestBox.style.left = rect.left + "px";
+  const scrollY = window.scrollY || window.pageYOffset || 0;
+  const scrollX = window.scrollX || window.pageXOffset || 0;
+
+  suggestBox.style.top = (rect.bottom + scrollY) + "px";
+  suggestBox.style.left = (rect.left + scrollX) + "px";
   suggestBox.style.width = rect.width + "px";
 }
+
 
 function closeSuggestBox() {
   if (!suggestBox) return;
@@ -1065,6 +1071,12 @@ window.addEventListener("scroll", () => {
     positionSuggestBox();
   }
 }, true);
+
+document.querySelector('.container').addEventListener('scroll', () => {
+  if (suggestBox && suggestBox.classList.contains("visible")) {
+    positionSuggestBox();
+  }
+});
 
 window.addEventListener("resize", () => {
   if (suggestBox && suggestBox.classList.contains("visible")) {
