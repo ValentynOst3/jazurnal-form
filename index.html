@@ -1,15 +1,15 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 
   <title>Журнал виїздів / повернень</title>
 
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
+    /* ------------------------------
+       ГЛОБАЛЬНІ ЗМІННІ (ТЕМНА GOOGLE FORMS)
+    ------------------------------ */
     :root {
       --bg: #202124;
       --surface: #292a2d;
@@ -25,28 +25,44 @@
       --transition: 0.16s ease;
     }
 
-    body {
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
       margin: 0;
-      font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 0;
       background: var(--bg);
       color: var(--text);
+      font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
       scroll-behavior: smooth;
     }
 
-    /* Головний контейнер */
+    input, select, textarea {
+      font-size: 16px !important; /* блокує автозум */
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ------------------------------
+       КОНТЕЙНЕР — ЯК GOOGLE FORMS
+    ------------------------------ */
     .page-wrapper {
-      width: 100%;
-      padding: 16px 0 32px;
       display: flex;
       justify-content: center;
+      padding: 24px 12px;
     }
 
     .container {
       width: 100%;
       max-width: 640px;
-      background: var(--surface);
-      padding: 24px 16px 28px;
-      border-top: 4px solid var(--accent);
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 24px 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.35);
     }
 
     h2 {
@@ -61,75 +77,112 @@
       margin-bottom: 20px;
     }
 
-    /* Блоки */
+    /* ------------------------------
+       БЛОКИ (CARDS)
+    ------------------------------ */
     .block {
-      background: var(--surface-soft);
-      border-radius: 8px;
-      padding: 16px 16px 18px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.02);
+      background: var(--surface);
+      padding: 20px 18px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
 
     .title {
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 8px;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--text);
     }
 
     .subtitle-inline {
-      font-size: 12px;
+      font-size: 14px;
       color: var(--text-muted);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
 
-    /* Верхній ряд */
+    /* ------------------------------
+       МОБІЛЬНА АДАПТАЦІЯ
+    ------------------------------ */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 14px;
+      }
+
+      .block {
+        padding: 18px 14px;
+        border-radius: 10px;
+      }
+
+      .title {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+    }
+
+    /* ------------------------------
+       ВЕРХНІЙ РЯД
+    ------------------------------ */
     .top-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 16px;
+      margin-bottom: 12px;
     }
 
     .top-col {
-      flex: 1 1 180px;
-      min-width: 180px;
+      flex: 1 1 200px;
+      min-width: 200px;
     }
 
     @media (max-width: 600px) {
       .top-row {
         flex-direction: column;
+        gap: 14px;
       }
       .top-col {
         min-width: 100%;
       }
     }
 
-    /* Радіо */
+    /* ------------------------------
+       РАДІОКНОПКИ — GOOGLE FORMS STYLE
+    ------------------------------ */
     .radio-group {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px 12px;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .radio-option {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
+      padding: 6px 4px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 13px;
-      padding: 4px 4px;
-      border-radius: 999px;
-      transition: background var(--transition);
+      font-size: 16px;
+      line-height: 1.3;
+      user-select: none;
+      color: var(--text);
+    }
+
+    .radio-option:hover {
+      background: rgba(138,180,248,0.08);
     }
 
     .radio-option input[type="radio"] {
       appearance: none;
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      min-height: 20px;
       border-radius: 50%;
       border: 2px solid var(--accent);
       background: transparent;
       position: relative;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .radio-option input[type="radio"]:checked {
@@ -140,27 +193,27 @@
     .radio-option input[type="radio"]:checked::after {
       content: "";
       position: absolute;
-      inset: 3px;
+      inset: 4px;
       border-radius: 50%;
-      background: #202124;
+      background: var(--bg);
     }
 
-    .radio-option:hover {
-      background: rgba(138,180,248,0.08);
-    }
-
-    /* Поля */
+    /* ------------------------------
+       ПОЛЯ ВВОДУ — GOOGLE FORMS STYLE
+    ------------------------------ */
     .text-input,
     input[type="date"],
     input[type="time"],
     select.text-input {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 4px;
+      padding: 14px 16px;
+      min-height: 48px;
+      border-radius: 8px;
       border: 1px solid var(--border);
       background: var(--input-bg);
       color: var(--text);
-      font-size: 14px;
+      font-size: 16px;
+      line-height: 1.4;
       transition: border-color var(--transition), box-shadow var(--transition);
     }
 
@@ -169,16 +222,19 @@
     input[type="time"]:focus,
     select.text-input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent-soft);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+      outline: none;
     }
 
-    /* Поле з помилкою */
-    .error-field {
-      border-color: var(--error) !important;
-      box-shadow: 0 0 0 1px rgba(242,139,130,0.5) !important;
+    .text-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.9;
+      font-size: 15px;
     }
 
-    /* Екіпаж */
+    /* ------------------------------
+       ЕКІПАЖ
+    ------------------------------ */
     .crew-row {
       display: flex;
       gap: 8px;
@@ -219,21 +275,25 @@
       border-color: var(--accent);
     }
 
-    /* Autocomplete */
+    /* ------------------------------
+       AUTOCOMPLETE — МОБІЛЬНИЙ
+    ------------------------------ */
     #globalSuggestBox {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
-      width: 260px;
-      background: #303134;
-      border-radius: 4px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.9);
-      max-height: 260px;
+      width: 100%;
+      max-width: 360px;
+      background: var(--surface-soft);
+      border-radius: 6px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.7);
+      max-height: 240px;
       overflow-y: auto;
       display: none;
       opacity: 0;
-      transition: opacity var(--transition);
-      z-index: 999999;
+      transition: opacity 0.15s ease;
+      z-index: 9999;
+      transform: translateY(4px);
     }
 
     #globalSuggestBox.visible {
@@ -242,45 +302,67 @@
     }
 
     #globalSuggestBox div {
-      padding: 8px 12px;
+      padding: 12px 14px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 16px;
+      line-height: 1.3;
+      color: var(--text);
     }
 
     #globalSuggestBox div:hover {
       background: rgba(138,180,248,0.15);
     }
 
-    /* Кнопка */
+    /* ------------------------------
+       КНОПКА — GOOGLE FORMS
+    ------------------------------ */
     #submitBtn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      border-radius: 999px;
+      width: 100%;
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 8px;
       border: none;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 17px;
+      font-weight: 600;
       background: var(--accent);
-      color: #202124;
-      font-weight: 500;
-      min-width: 120px;
-      transition: background var(--transition), transform var(--transition);
+      color: var(--bg);
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     }
 
     #submitBtn:hover:not(:disabled) {
       background: #a5c4fb;
-      transform: translateY(-1px);
+    }
+
+    #submitBtn:active:not(:disabled) {
+      transform: scale(0.97);
     }
 
     #submitBtn:disabled {
-      opacity: 0.6;
+      opacity: 0.55;
       cursor: default;
+      transform: none;
     }
 
+    /* ------------------------------
+       СТАТУСИ
+    ------------------------------ */
     #status {
-      margin-top: 10px;
-      color: var(--text-muted);
-      font-size: 12px;
-      min-height: 18px;
+      margin-top: 14px;
+      font-size: 15px;
+      font-weight: 500;
+      min-height: 20px;
+      transition: opacity 0.2s ease;
+      opacity: 1;
+    }
+
+    #status.success {
+      color: #81c995;
+    }
+
+    #status.error {
+      color: #f28b82;
     }
 
     .hidden {
@@ -801,12 +883,11 @@ function fillFromPositions(list) {
   });
 
   // 🔥 ДОДАЄМО АВТОЛОГІКУ
-  // Якщо лише одна позиція — одразу застосувати її і підвантажити екіпаж
   if (list.length === 1) {
     select.value = list[0];
     applyFromPosition();
     loadLastRecordForReturn();
-  }  
+  }
 }
 
 function applyFromPosition() {
@@ -990,8 +1071,7 @@ window.addEventListener("resize", () => {
     positionSuggestBox();
   }
 });
-</script>
-<script>
+
 /* ---------------------------------------------------------
    16. ВАЛІДАЦІЯ (оновлена, з підсвічуванням)
 --------------------------------------------------------- */
@@ -1083,8 +1163,7 @@ function showValidationErrors(errors) {
   status.style.color = "#f28b82";
   status.textContent = first.message;
 }
-</script>
-<script>
+
 /* ---------------------------------------------------------
    18. SUBMIT FORM (фінальна версія)
 --------------------------------------------------------- */
